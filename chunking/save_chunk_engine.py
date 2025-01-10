@@ -8,7 +8,7 @@ def save_on_disk(chunks, output_dir="scraped_chunks"):
         with open(f"{output_dir}/chunk_{i}.json", "w") as f:
             json.dump({"content": chunk}, f)
 
-    print(f"Documents découpés et sauvegardés dans {output_dir}")
+    print(f"{len(chunks)} Documents découpés et sauvegardés dans {output_dir}")
 
 
 # if necessary push on bucket GCP

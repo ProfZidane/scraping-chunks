@@ -4,32 +4,34 @@ from urllib.parse import urljoin
 import time
 
 
-def find_all_urls(base_url, max_pages=50, limits=5):
-    links = []
-    interation = 0
-    for url in base_url:
-      links.append(url)
-      source_code = requests.get(url)
-      soup = BeautifulSoup(source_code.content, 'lxml')
+def find_all_urls(base_urls, max_pages=50, limits=5):
+    links = set()
+    stack = base_urls
+    iteration = 0
 
-      for link in soup.find_all('a'):
+    while stack and iteration < max_pages:
+        url = stack.pop()
+        if url not in links:
+            links.add(url)
+            try:
+                # Obtenir le contenu de la page
+                source_code = requests.get(url)
+                soup = BeautifulSoup(source_code.content, 'lxml')
 
-          if interation == limits:
-            break          
+                for link in soup.find_all('a', href=True):
+                    href = link['href']
 
-          if (link['href'].startswith("#") == False):
-              if (link['href'].startswith("https://") == True):
-                  links.append(link['href'])
-              else:
-                  full_url = urljoin(url, str(link["href"]))
-                  # recursived call
-                  links.append(full_url)
-                  sublinks = find_all_urls([full_url])
-                  links += sublinks
-          else:
-              print("Skip {} link".format(link['href']))
+                    # Ignorer les ancres (#)
+                    if href.startswith("#"):
+                        continue
 
-          interation += 1
+                    # Résoudre les URLs absolues et relatives
+                    full_url = href if href.startswith("http") else urljoin(url, href)
 
+                    if full_url not in links and iteration < limits:
+                        stack.append(full_url)
+                        iteration += 1
+            except Exception as e:
+                print(f"Erreur lors de la récupération de {url}: {e}")
 
-      return links
+    return list(links)
