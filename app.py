@@ -26,5 +26,7 @@ contents = get_web_page_content(links)
 
 # chunking the content
 chunks = save_large_chunks(contents, chunk_size=3000)
-save_on_disk(chunks, output_dir="data/scraped_chunks")
+
+print(chunks[0])
+#save_on_disk(chunks, output_dir="data/scraped_chunks")
 

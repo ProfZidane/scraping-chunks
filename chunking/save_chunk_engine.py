@@ -5,8 +5,9 @@ import json
 def save_on_disk(chunks, output_dir="scraped_chunks"):
     os.makedirs(output_dir, exist_ok=True)
     for i, chunk in enumerate(chunks):
+        concatenated_content = " ".join(chunk)
         with open(f"{output_dir}/chunk_{i}.json", "w") as f:
-            json.dump({"content": chunk}, f)
+            json.dump({"content": concatenated_content}, f)
 
     print(f"{len(chunks)} Documents découpés et sauvegardés dans {output_dir}")
 
